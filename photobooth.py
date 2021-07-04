@@ -61,5 +61,65 @@ def save():
      # storing the receivers email address
      msg['To'] = ','.join(toaddr) 
   
- 
- 
+      storing the subject
+      msg['Subject'] = "Your Magic Photo"
+    
+      # string to store the body of the mail
+      body = "Hello,\n\nHere's your awesome magic photo from The PhotoBooth."
+      
+      # attach the body with the msg instance
+      msg.attach(MIMEText(body, 'plain'))
+      
+      # open the file to be sent
+      filename = 'D1G1TALArtboard4.jpg'
+      attachment = open('D1G1TALArtboard4.jpg', "rb")
+      
+      # instance of MIMEBase and named as p
+      p = MIMEBase('application', 'octet-stream')
+      
+      # To change the payload into encoded form
+      p.set_payload((attachment).read())
+      
+      # encode into base64
+      encoders.encode_base64(p)
+      p.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+      
+      # attach the instance 'p' to instance 'msg'
+      msg.attach(p)
+      
+      # creates SMTP session
+      s = smtplib.SMTP('smtp.gmail.com', 587)
+      
+      # start TLS for security
+      s.starttls()
+      
+      # Authentication
+      s.login(fromaddr, "password")
+      
+      # Converts the Multipart msg into a string
+      text = msg.as_string()
+      
+      # sending the mail
+      s.sendmail(fromaddr, toaddr, text)
+      
+      # terminating the session
+      s.quit()
+    
+def transparentOverlay(src, overlay, pos=(0, 0), scale=1):
+      overlay = cv2.resize(overlay, (0, 0), fx=scale, fy=scale)
+      h, w, _ = overlay.shape # Size of foreground
+      rows, cols, _ = src.shape # Size of background Image
+      y, x = pos[0], pos[1] # Position of foreground/overlay image
+      
+      for i in range(h):
+          for j in range(w):
+              if x + i >= rows or y + j >= cols:
+                  continue
+              alpha = float(overlay[i][j][3] / 255.0) # read the alpha channel
+              src[x + i][y + j] = alpha * overlay[i][j][:3] + (1 - alpha) * src[x + i][y + j]
+              return src
+  
+def load_images():
+ pass
+
+def open_gallery():
